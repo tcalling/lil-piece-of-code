@@ -1,0 +1,76 @@
+local DataStoreService = 
+game:GetService("DataStoreService")
+
+local leaderstatrandom = DataStoreService:GetDataStore("leaderstatrandom")
+
+local function SaveData(player,data)
+    local success,error = pcall(function()
+        leaderstatrandom:SetAsync(player.UserId,data)
+    end)
+    
+    if not success then
+        warn("unluck lol mega fortnite balls")
+        
+        task.wait(1)
+        
+        local success,error = pcall(function()
+            leaderstatrandom:SetAsync(player.UserId,data)
+        end)
+        
+        if not success then
+            warn("data not saved for real")
+            return false
+        end
+        
+    else
+        print("totally saved data")
+        return true
+    end
+end
+
+
+local function LoadData(player)
+    
+    local initialData = 100
+    
+    local success,data = pcall(function()
+        return leaderstatrandom:GetAsync(player.UserId)
+    end)
+    
+    if success and data then
+        print("data loaded")
+        initialData = data
+    else
+        print("data not loaded")
+    end
+    
+    local leaderstat = Instance.new("Folder",player)
+    leaderstat.Name = "leaderstats"
+    
+    local datavalue = Instance.new("IntValue",leaderstat)
+    datavalue.Name = "initialData"
+    datavalue.Value = initialData
+    
+    
+end
+
+
+
+
+
+
+game.Players.PlayerAdded:Connect(function(player)
+    LoadData(player)
+    print("Trying to load data of a player")
+end)
+
+game.Players.PlayerRemoving:Connect(function(player)
+    local leaderstat = player:FindFirstChild("leaderstats")
+    if leaderstat then
+        local initialData = leaderstat:FindFirstChild("initialData")
+        if initialData then
+            SaveData(player,initialData.Value)
+            print("Trying to save data of a player")
+        end
+    end
+end)
